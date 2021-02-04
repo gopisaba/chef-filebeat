@@ -34,10 +34,24 @@ action :create do
   end
 
   if platform_family?('fedora', 'rhel', 'amazon')
-    package_arch = node['kernel']['machine'] =~ /x86_64/ ? 'x86_64' : 'i686'
+    package_arch =
+      if node['kernel']['machine'] =~ /aarch64/
+        'aarch64'
+      elsif node['kernel']['machine'] =~ /x86_64/
+        'x86_64'
+      else
+        'i686'
+      end
     package_family = 'rpm'
   elsif platform_family?('debian')
-    package_arch = node['kernel']['machine'] =~ /x86_64/ ? 'amd64' : 'i386'
+    package_arch =
+      if node['kernel']['machine'] =~ /aarch64/
+        'arm64'
+      elsif node['kernel']['machine'] =~ /x86_64/
+        'amd64'
+      else
+        'i386'
+      end
     package_family = 'deb'
   else
     raise "platform_family #{node['platform_family']} not supported"
